@@ -11,7 +11,7 @@ endif
 
 # COMMON CONFIGURATION #
 
-NAME := FBI
+NAME := FBI_JPN
 
 BUILD_DIR := build
 OUTPUT_DIR := output
@@ -39,7 +39,7 @@ VERSION_MICRO := $(word 3, $(VERSION_PARTS))
 ifeq ($(TARGET),$(filter $(TARGET),3DS WIIU))
     TITLE := $(NAME)
     DESCRIPTION := Open source CIA installer.
-    AUTHOR := Steveice10
+    AUTHOR := take6556
 endif
 
 # 3DS CONFIGURATION #
@@ -48,8 +48,8 @@ ifeq ($(TARGET),3DS)
     LIBRARY_DIRS += $(DEVKITPRO)/libctru $(DEVKITPRO)/portlibs/armv6k $(DEVKITPRO)/portlibs/3ds
     LIBRARIES += jansson z citro3d ctru
 
-    PRODUCT_CODE := CTR-P-CFBI
-    UNIQUE_ID := 0xF8001
+    PRODUCT_CODE := CTR-P-JFBI
+    UNIQUE_ID := 0xF6556
 
     CATEGORY := Application
     USE_ON_SD := true
