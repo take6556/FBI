@@ -154,7 +154,7 @@ static Result action_install_cdn_restore(void* data, u32 index) {
 bool action_install_cdn_error(void* data, u32 index, Result res, ui_view** errorView) {
     install_cdn_data* installData = (install_cdn_data*) data;
 
-    *errorView = error_display_res(installData->ticket, task_draw_ticket_info, res, "Failed to install %s from CDN.", index == 0 ? "TMD" : "content");
+    *errorView = error_display_res(installData->ticket, task_draw_ticket_info, res, "CDNからのインストールに失敗しました。 %s.", index == 0 ? "TMD" : "content");
 
     return false;
 }
@@ -197,13 +197,13 @@ static void action_install_cdn_update(ui_view* view, void* data, float* progress
                     task_populate_tickets_update_use(installData->item);
                 }
 
-                prompt_display_notify("Success", "Install finished.", COLOR_TEXT, installData->ticket, task_draw_ticket_info, NULL);
+                prompt_display_notify("成功", "インストールが完了しました。.", COLOR_TEXT, installData->ticket, task_draw_ticket_info, NULL);
             }
         } else {
             AM_InstallTitleAbort();
 
             if(R_FAILED(res)) {
-                error_display_res(installData->ticket, task_draw_ticket_info, res, "Failed to install CDN title.");
+                error_display_res(installData->ticket, task_draw_ticket_info, res, "CDNタイトルのインストールに失敗しました。");
             }
         }
 
@@ -242,14 +242,14 @@ static void action_install_cdn_n3ds_onresponse(ui_view* view, void* data, u32 re
 
         if(R_SUCCEEDED(res = AM_InstallTitleBegin(dest, installData->ticket->titleId, false))) {
             if(R_SUCCEEDED(res = task_data_op(&installData->installInfo))) {
-                info_display("Installing CDN Title", "Press B to cancel.", true, data, action_install_cdn_update, action_install_cdn_draw_top);
+                info_display("CDNタイトルのインストール", "Bを押してキャンセル", true, data, action_install_cdn_update, action_install_cdn_draw_top);
             } else {
                 AM_InstallTitleAbort();
             }
         }
 
         if(R_FAILED(res)) {
-            error_display_res(installData->ticket, task_draw_ticket_info, res, "Failed to initiate CDN title installation.");
+            error_display_res(installData->ticket, task_draw_ticket_info, res, "CDNタイトルのインストールを開始できませんでした。");
 
             action_install_cdn_free_data(data);
         }
@@ -266,7 +266,7 @@ static void action_install_cdn_version_onresponse(ui_view* view, void* data, Swk
 
         bool n3ds = false;
         if(R_SUCCEEDED(APT_CheckNew3DS(&n3ds)) && !n3ds && ((installData->ticket->titleId >> 28) & 0xF) == 2) {
-            prompt_display_yes_no("Confirmation", "Title is intended for New 3DS systems.\nContinue?", COLOR_TEXT, data, action_install_cdn_draw_top, action_install_cdn_n3ds_onresponse);
+            prompt_display_yes_no("確認", "タイトルは、New3DSのシステムを対象としています。\n続けますか？", COLOR_TEXT, data, action_install_cdn_draw_top, action_install_cdn_n3ds_onresponse);
         } else {
             action_install_cdn_n3ds_onresponse(NULL, data, PROMPT_YES);
         }
@@ -278,7 +278,7 @@ static void action_install_cdn_version_onresponse(ui_view* view, void* data, Swk
 void action_install_cdn_noprompt_internal(volatile bool* done, ticket_info* info, bool finishedPrompt, bool promptVersion, list_item* item) {
     install_cdn_data* data = (install_cdn_data*) calloc(1, sizeof(install_cdn_data));
     if(data == NULL) {
-        error_display(NULL, NULL, "Failed to allocate install CDN data.");
+        error_display(NULL, NULL, "インストールしたCDNデータの割り当てに失敗しました。");
 
         return;
     }
@@ -326,7 +326,7 @@ void action_install_cdn_noprompt_internal(volatile bool* done, ticket_info* info
     data->installInfo.finished = true;
 
     if(promptVersion) {
-        kbd_display("Enter version (empty for default)", "", SWKBD_TYPE_NUMPAD, 0, SWKBD_ANYTHING, sizeof(data->tmdVersion), data, action_install_cdn_version_onresponse);
+        kbd_display("バージョンを入力してください（デフォルトでは空です）", "", SWKBD_TYPE_NUMPAD, 0, SWKBD_ANYTHING, sizeof(data->tmdVersion), data, action_install_cdn_version_onresponse);
     } else {
         action_install_cdn_version_onresponse(NULL, data, SWKBD_BUTTON_CONFIRM, "");
     }
@@ -349,7 +349,7 @@ static void action_install_cdn_onresponse(ui_view* view, void* data, u32 respons
 }
 
 void action_install_cdn(linked_list* items, list_item* selected) {
-    static const char* options[3] = {"Default\nVersion", "Select\nVersion", "No"};
+    static const char* options[3] = {"デフォルト\nバージョン", "選択\nバージョン", "いいえ"};
     static u32 optionButtons[3] = {KEY_A, KEY_X, KEY_B};
-    prompt_display_multi_choice("Confirmation", "Install the selected title from the CDN?", COLOR_TEXT, options, optionButtons, 3, selected, task_draw_ticket_info, action_install_cdn_onresponse);
+    prompt_display_multi_choice("確認", "選択したタイトルをCDNからインストールしますか？", COLOR_TEXT, options, optionButtons, 3, selected, task_draw_ticket_info, action_install_cdn_onresponse);
 }

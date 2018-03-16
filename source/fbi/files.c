@@ -10,30 +10,30 @@
 #include "task/uitask.h"
 #include "../core/core.h"
 
-static list_item rename_opt = {"Rename", COLOR_TEXT, action_rename};
-static list_item copy = {"Copy", COLOR_TEXT, NULL};
-static list_item paste = {"Paste", COLOR_TEXT, action_paste_contents};
+static list_item rename_opt = {"名前変更", COLOR_TEXT, action_rename};
+static list_item copy = {"コピー", COLOR_TEXT, NULL};
+static list_item paste = {"ペースト", COLOR_TEXT, action_paste_contents};
 
-static list_item delete_file = {"Delete", COLOR_TEXT, action_delete_file};
+static list_item delete_file = {"削除", COLOR_TEXT, action_delete_file};
 
-static list_item install_cia = {"Install CIA", COLOR_TEXT, action_install_cia};
-static list_item install_and_delete_cia = {"Install and delete CIA", COLOR_TEXT, action_install_cia_delete};
+static list_item install_cia = {"CIAをインストール", COLOR_TEXT, action_install_cia};
+static list_item install_and_delete_cia = {"CIAをインストールして削除", COLOR_TEXT, action_install_cia_delete};
 
-static list_item install_ticket = {"Install ticket", COLOR_TEXT, action_install_ticket};
-static list_item install_and_delete_ticket = {"Install and delete ticket", COLOR_TEXT, action_install_ticket_delete};
+static list_item install_ticket = {"チケットをインストール", COLOR_TEXT, action_install_ticket};
+static list_item install_and_delete_ticket = {"チケットをインストールして削除", COLOR_TEXT, action_install_ticket_delete};
 
-static list_item delete_dir = {"Delete", COLOR_TEXT, action_delete_dir};
-static list_item copy_all_contents = {"Copy all contents", COLOR_TEXT, NULL};
-static list_item delete_all_contents = {"Delete all contents", COLOR_TEXT, action_delete_dir_contents};
-static list_item new_folder = {"New folder", COLOR_TEXT, action_new_folder};
+static list_item delete_dir = {"削除", COLOR_TEXT, action_delete_dir};
+static list_item copy_all_contents = {"全てのコンテンツをコピー", COLOR_TEXT, NULL};
+static list_item delete_all_contents = {"全ての内容を削除", COLOR_TEXT, action_delete_dir_contents};
+static list_item new_folder = {"新しいフォルダ", COLOR_TEXT, action_new_folder};
 
-static list_item install_all_cias = {"Install all CIAs", COLOR_TEXT, action_install_cias};
-static list_item install_and_delete_all_cias = {"Install and delete all CIAs", COLOR_TEXT, action_install_cias_delete};
-static list_item delete_all_cias = {"Delete all CIAs", COLOR_TEXT, action_delete_dir_cias};
+static list_item install_all_cias = {"全てのCIAをインストール", COLOR_TEXT, action_install_cias};
+static list_item install_and_delete_all_cias = {"全てのCIAをインストールして削除", COLOR_TEXT, action_install_cias_delete};
+static list_item delete_all_cias = {"全てのCIAを削除", COLOR_TEXT, action_delete_dir_cias};
 
-static list_item install_all_tickets = {"Install all tickets", COLOR_TEXT, action_install_tickets};
-static list_item install_and_delete_all_tickets = {"Install and delete all tickets", COLOR_TEXT, action_install_tickets_delete};
-static list_item delete_all_tickets = {"Delete all tickets", COLOR_TEXT, action_delete_dir_tickets};
+static list_item install_all_tickets = {"全てのチケットをインストール", COLOR_TEXT, action_install_tickets};
+static list_item install_and_delete_all_tickets = {"全てのチケットをインストールして削除", COLOR_TEXT, action_install_tickets_delete};
+static list_item delete_all_tickets = {"全てのチケットを削除", COLOR_TEXT, action_delete_dir_tickets};
 
 typedef struct {
     populate_files_data populateData;
@@ -89,9 +89,9 @@ static void files_action_update(ui_view* view, void* data, linked_list* items, l
 
             Result res = 0;
             if(R_SUCCEEDED(res = clipboard_set_contents(actionData->parent->archive, info->path, selected == &copy_all_contents))) {
-                prompt_display_notify("Success", selected == &copy_all_contents ? "Current directory contents copied to clipboard." : (info->attributes & FS_ATTRIBUTE_DIRECTORY) ? "Current directory copied to clipboard." : "File copied to clipboard.", COLOR_TEXT, info, task_draw_file_info, NULL);
+                prompt_display_notify("成功", selected == &copy_all_contents ? "現在のディレクトリの内容をクリップボードにコピーしました。" : (info->attributes & FS_ATTRIBUTE_DIRECTORY) ? "現在のディレクトリをクリップボードにコピーしました。" : "ファイルをクリップボードにコピーしました。", COLOR_TEXT, info, task_draw_file_info, NULL);
             } else {
-                error_display_res(info, task_draw_file_info, res, "Failed to copy to clipboard.");
+                error_display_res(info, task_draw_file_info, res, "クリップボードへのコピーに失敗しました。");
             }
         } else {
             action(actionData->items, actionData->selected);
@@ -147,7 +147,7 @@ static void files_action_update(ui_view* view, void* data, linked_list* items, l
 static void files_action_open(linked_list* items, list_item* selected, files_data* parent) {
     files_action_data* data = (files_action_data*) calloc(1, sizeof(files_action_data));
     if(data == NULL) {
-        error_display(NULL, NULL, "Failed to allocate files action data.");
+        error_display(NULL, NULL, "ファイルのアクションデータの割り当てに失敗しました。");
 
         return;
     }
@@ -172,7 +172,7 @@ static void files_action_open(linked_list* items, list_item* selected, files_dat
         }
     }
 
-    list_display((((file_info*) selected->data)->attributes & FS_ATTRIBUTE_DIRECTORY) ? "Directory Action" : "File Action", "A: Select, B: Return", data, files_action_update, files_action_draw_top);
+    list_display((((file_info*) selected->data)->attributes & FS_ATTRIBUTE_DIRECTORY) ? "ディレクトリアクション" : "ファイルアクション", "A: 選択, B: 戻る", data, files_action_update, files_action_draw_top);
 }
 
 static void files_options_add_entry(linked_list* items, const char* name, bool* val) {
@@ -214,16 +214,16 @@ static void files_options_update(ui_view* view, void* data, linked_list* items, 
     }
 
     if(linked_list_size(items) == 0) {
-        files_options_add_entry(items, "Show hidden", &listData->showHidden);
-        files_options_add_entry(items, "Show directories", &listData->showDirectories);
-        files_options_add_entry(items, "Show files", &listData->showFiles);
-        files_options_add_entry(items, "Show CIAs", &listData->showCias);
-        files_options_add_entry(items, "Show tickets", &listData->showTickets);
+        files_options_add_entry(items, "隠しファイルを表示", &listData->showHidden);
+        files_options_add_entry(items, "ディレクトリを表示", &listData->showDirectories);
+        files_options_add_entry(items, "ファイルを表示", &listData->showFiles);
+        files_options_add_entry(items, "CIAを表示", &listData->showCias);
+        files_options_add_entry(items, "チケットを表示", &listData->showTickets);
     }
 }
 
 static void files_options_open(files_data* data) {
-    list_display("Options", "A: Toggle, B: Return", data, files_options_update, NULL);
+    list_display("オプション", "A: 変更, B: 戻る", data, files_options_update, NULL);
 }
 
 static void files_draw_top(ui_view* view, void* data, float x1, float y1, float x2, float y2, list_item* selected) {
@@ -246,7 +246,7 @@ static void files_repopulate(files_data* listData, linked_list* items) {
 
     Result res = task_populate_files(&listData->populateData);
     if(R_FAILED(res)) {
-        error_display_res(NULL, NULL, res, "Failed to initiate file list population.");
+        error_display_res(NULL, NULL, res, "ファイルのリストの登録の開始に失敗しました。");
     }
 
     listData->populated = true;
@@ -323,7 +323,7 @@ static void files_update(ui_view* view, void* data, linked_list* items, list_ite
     if(selected != NULL && selected->data != NULL && (selectedTouched || (hidKeysDown() & KEY_A))) {
         file_info* fileInfo = (file_info*) selected->data;
 
-        if((fileInfo->attributes & FS_ATTRIBUTE_DIRECTORY) && strncmp(selected->name, "<current directory>", LIST_ITEM_NAME_MAX) != 0) {
+        if((fileInfo->attributes & FS_ATTRIBUTE_DIRECTORY) && strncmp(selected->name, "<現在のディレクトリ>", LIST_ITEM_NAME_MAX) != 0) {
             files_navigate(listData, items, fileInfo->path);
         } else {
             files_action_open(items, selected, listData);
@@ -336,7 +336,7 @@ static void files_update(ui_view* view, void* data, linked_list* items, list_ite
     }
 
     if(listData->populateData.finished && R_FAILED(listData->populateData.result)) {
-        error_display_res(NULL, NULL, listData->populateData.result, "Failed to populate file list.");
+        error_display_res(NULL, NULL, listData->populateData.result, "ファイルのリストへの入力に失敗しました。");
 
         listData->populateData.result = 0;
     }
@@ -363,7 +363,7 @@ static bool files_filter(void* data, const char* name, u32 attributes) {
 void files_open(FS_ArchiveID archiveId, FS_Path archivePath) {
     files_data* data = (files_data*) calloc(1, sizeof(files_data));
     if(data == NULL) {
-        error_display(NULL, NULL, "Failed to allocate files data.");
+        error_display(NULL, NULL, "ファイルデータの割り当てに失敗しました。");
 
         return;
     }
@@ -391,7 +391,7 @@ void files_open(FS_ArchiveID archiveId, FS_Path archivePath) {
     if(archivePath.data != NULL) {
         data->archivePath.data = calloc(1, data->archivePath.size);
         if(data->archivePath.data == NULL) {
-            error_display(NULL, NULL, "Failed to allocate files data.");
+            error_display(NULL, NULL, "ファイルデータの割り当てに失敗しました。");
 
             files_free_data(data);
             return;
@@ -406,13 +406,13 @@ void files_open(FS_ArchiveID archiveId, FS_Path archivePath) {
 
     Result res = 0;
     if(R_FAILED(res = fs_open_archive(&data->archive, archiveId, archivePath))) {
-        error_display_res(NULL, NULL, res, "Failed to open file listing archive.");
+        error_display_res(NULL, NULL, res, "ファイルのリストのアーカイブを開くことに失敗しました。");
 
         files_free_data(data);
         return;
     }
 
-    list_display("Files", "A: Select, B: Back, X: Refresh, Select: Options", data, files_update, files_draw_top);
+    list_display("ファイル", "A: 選択, B: 戻る, X: 一覧をリロード, Select: オプション", data, files_update, files_draw_top);
 }
 
 static void files_open_nand_warning_onresponse(ui_view* view, void* data, u32 response) {
@@ -424,7 +424,7 @@ static void files_open_nand_warning_onresponse(ui_view* view, void* data, u32 re
 }
 
 void files_open_nand_warning(FS_ArchiveID archive) {
-    prompt_display_yes_no("Confirmation", "Modifying the NAND is dangerous and can render\n the system inoperable.\nMake sure you know what you are doing.\n\nProceed?", COLOR_TEXT, (void*) archive, NULL, files_open_nand_warning_onresponse);
+    prompt_display_yes_no("注意", "NANDを変更することは危険であり、システムを動作不能に\n 陥らせることがあります。\nあなたが理解してこの動作を行っているか確認してください。\n\n続行しますか？", COLOR_TEXT, (void*) archive, NULL, files_open_nand_warning_onresponse);
 }
 
 void files_open_sd() {

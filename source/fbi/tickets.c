@@ -9,9 +9,9 @@
 #include "task/uitask.h"
 #include "../core/core.h"
 
-static list_item install_from_cdn = {"Install from CDN", COLOR_TEXT, action_install_cdn};
-static list_item delete_ticket = {"Delete Ticket", COLOR_TEXT, action_delete_ticket};
-static list_item delete_unused_tickets = {"Delete Unused Tickets", COLOR_TEXT, action_delete_tickets_unused};
+static list_item install_from_cdn = {"CDNからインストール", COLOR_TEXT, action_install_cdn};
+static list_item delete_ticket = {"チケットの削除", COLOR_TEXT, action_delete_ticket};
+static list_item delete_unused_tickets = {"未使用のチケットの削除", COLOR_TEXT, action_delete_tickets_unused};
 
 typedef struct {
     populate_tickets_data populateData;
@@ -63,7 +63,7 @@ static void tickets_action_update(ui_view* view, void* data, linked_list* items,
 static void tickets_action_open(linked_list* items, list_item* selected) {
     tickets_action_data* data = (tickets_action_data*) calloc(1, sizeof(tickets_action_data));
     if(data == NULL) {
-        error_display(NULL, NULL, "Failed to allocate tickets action data.");
+        error_display(NULL, NULL, "チケットのアクションデータの割り当てに失敗しました。");
 
         return;
     }
@@ -71,7 +71,7 @@ static void tickets_action_open(linked_list* items, list_item* selected) {
     data->items = items;
     data->selected = selected;
 
-    list_display("Ticket Action", "A: Select, B: Return", data, tickets_action_update, tickets_action_draw_top);
+    list_display("チケットアクション", "A: 選択, B: 戻る", data, tickets_action_update, tickets_action_draw_top);
 }
 
 static void tickets_draw_top(ui_view* view, void* data, float x1, float y1, float x2, float y2, list_item* selected) {
@@ -111,14 +111,14 @@ static void tickets_update(ui_view* view, void* data, linked_list* items, list_i
         listData->populateData.items = items;
         Result res = task_populate_tickets(&listData->populateData);
         if(R_FAILED(res)) {
-            error_display_res(NULL, NULL, res, "Failed to initiate ticket list population.");
+            error_display_res(NULL, NULL, res, "チケットのリストの作成に失敗しました。");
         }
 
         listData->populated = true;
     }
 
     if(listData->populateData.finished && R_FAILED(listData->populateData.result)) {
-        error_display_res(NULL, NULL, listData->populateData.result, "Failed to populate ticket list.");
+        error_display_res(NULL, NULL, listData->populateData.result, "チケットのリストの値の設定に失敗しました。");
 
         listData->populateData.result = 0;
     }
@@ -132,12 +132,12 @@ static void tickets_update(ui_view* view, void* data, linked_list* items, list_i
 void tickets_open() {
     tickets_data* data = (tickets_data*) calloc(1, sizeof(tickets_data));
     if(data == NULL) {
-        error_display(NULL, NULL, "Failed to allocate tickets data.");
+        error_display(NULL, NULL, "チケットのデータの割り当てに失敗しました。");
 
         return;
     }
 
     data->populateData.finished = true;
 
-    list_display("Tickets", "A: Select, B: Return, X: Refresh", data, tickets_update, tickets_draw_top);
+    list_display("チケット", "A: 選択, B: 戻る, X: 一覧をリロード", data, tickets_update, tickets_draw_top);
 }

@@ -88,7 +88,7 @@ static Result dumpnand_restore(void* data, u32 index) {
 }
 
 static bool dumpnand_error(void* data, u32 index, Result res, ui_view** errorView) {
-    *errorView = error_display_res(NULL, NULL, res, "Failed to dump NAND.");
+    *errorView = error_display_res(NULL, NULL, res, "NANDをダンプできませんでした。");
     return true;
 }
 
@@ -100,7 +100,7 @@ static void dumpnand_update(ui_view* view, void* data, float* progress, char* te
         info_destroy(view);
 
         if(R_SUCCEEDED(dumpData->result)) {
-            prompt_display_notify("Success", "NAND dumped.", COLOR_TEXT, NULL, NULL, NULL);
+            prompt_display_notify("成功", "NANDをダンプしました。", COLOR_TEXT, NULL, NULL, NULL);
         }
 
         free(dumpData);
@@ -126,9 +126,9 @@ static void dumpnand_onresponse(ui_view* view, void* data, u32 response) {
 
         Result res = task_data_op(dumpData);
         if(R_SUCCEEDED(res)) {
-            info_display("Dumping NAND", "Press B to cancel.", true, data, dumpnand_update, NULL);
+            info_display("NANDをダンプしています。", "Bボタンを押してキャンセル", true, data, dumpnand_update, NULL);
         } else {
-            error_display_res(NULL, NULL, res, "Failed to initiate NAND dump.");
+            error_display_res(NULL, NULL, res, "NANDのダンプの開始に失敗しました。");
             free(data);
         }
     } else {
@@ -139,7 +139,7 @@ static void dumpnand_onresponse(ui_view* view, void* data, u32 response) {
 void dumpnand_open() {
     data_op_data* data = (data_op_data*) calloc(1, sizeof(data_op_data));
     if(data == NULL) {
-        error_display(NULL, NULL, "Failed to allocate dump NAND data.");
+        error_display(NULL, NULL, "ダンプしたNANDデータの割り当てに失敗しました。");
 
         return;
     }
@@ -175,5 +175,5 @@ void dumpnand_open() {
 
     data->finished = true;
 
-    prompt_display_yes_no("Confirmation", "Dump raw NAND image to the SD card?", COLOR_TEXT, data, NULL, dumpnand_onresponse);
+    prompt_display_yes_no("確認", "未処理のNANDイメージをSDカードにダンプしますか？", COLOR_TEXT, data, NULL, dumpnand_onresponse);
 }

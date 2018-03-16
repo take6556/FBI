@@ -10,7 +10,7 @@
 #include "task/uitask.h"
 #include "../core/core.h"
 
-static list_item install = {"Install", COLOR_TEXT, action_install_titledb};
+static list_item install = {"インストール", COLOR_TEXT, action_install_titledb};
 
 typedef struct {
     populate_titledb_data populateData;
@@ -82,7 +82,7 @@ static void titledb_action_update(ui_view* view, void* data, linked_list* items,
 static void titledb_action_open(linked_list* items, list_item* selected, bool cia) {
     titledb_action_data* data = (titledb_action_data*) calloc(1, sizeof(titledb_action_data));
     if(data == NULL) {
-        error_display(NULL, NULL, "Failed to allocate TitleDB action data.");
+        error_display(NULL, NULL, "TitleDBのアクションデータの割り当てに失敗しました。");
 
         return;
     }
@@ -91,7 +91,7 @@ static void titledb_action_open(linked_list* items, list_item* selected, bool ci
     data->selected = selected;
     data->cia = cia;
 
-    list_display("TitleDB Action", "A: Select, B: Return", data, titledb_action_update, titledb_action_draw_top);
+    list_display("TitleDBアクション", "A: 選択, B: 戻る", data, titledb_action_update, titledb_action_draw_top);
 }
 
 static void titledb_entry_draw_top(ui_view* view, void* data, float x1, float y1, float x2, float y2, list_item* selected) {
@@ -173,7 +173,7 @@ static void titledb_entry_update(ui_view* view, void* data, linked_list* items, 
 static void titledb_entry_open(linked_list* items, list_item* selected) {
     titledb_entry_data* data = (titledb_entry_data*) calloc(1, sizeof(titledb_entry_data));
     if(data == NULL) {
-        error_display(NULL, NULL, "Failed to allocate TitleDB entry data.");
+        error_display(NULL, NULL, "TitleDBのエントリデータの割り当てに失敗しました。");
 
         return;
     }
@@ -181,7 +181,7 @@ static void titledb_entry_open(linked_list* items, list_item* selected) {
     data->items = items;
     data->selected = selected;
 
-    list_display("TitleDB Entry", "A: Select, B: Return", data, titledb_entry_update, titledb_entry_draw_top);
+    list_display("TitleDBエントリー", "A: 選択, B: 戻る", data, titledb_entry_update, titledb_entry_draw_top);
 }
 
 static int titledb_compare(void* data, const void* p1, const void* p2) {
@@ -264,17 +264,17 @@ static void titledb_options_update(ui_view* view, void* data, linked_list* items
     }
 
     if(linked_list_size(items) == 0) {
-        titledb_options_add_entry(items, "Show CIAs", &listData->showCIAs);
-        titledb_options_add_entry(items, "Show 3DSXs", &listData->show3DSXs);
-        titledb_options_add_entry(items, "Sort by name", &listData->sortByName);
-        titledb_options_add_entry(items, "Sort by update date", &listData->sortByUpdate);
+        titledb_options_add_entry(items, "CIAを表示", &listData->showCIAs);
+        titledb_options_add_entry(items, "3DSXを表示", &listData->show3DSXs);
+        titledb_options_add_entry(items, "名前順に並び替え", &listData->sortByName);
+        titledb_options_add_entry(items, "アップデートされた日付順に並び替え", &listData->sortByUpdate);
     }
 }
 
 static void titledb_options_open(titledb_data* parent, linked_list* items) {
     titledb_options_data* data = (titledb_options_data*) calloc(1, sizeof(titledb_options_data));
     if(data == NULL) {
-        error_display(NULL, NULL, "Failed to allocate TitleDB options data.");
+        error_display(NULL, NULL, "TitleDBのオプションのデータの割り当てに失敗しました。");
 
         return;
     }
@@ -282,14 +282,14 @@ static void titledb_options_open(titledb_data* parent, linked_list* items) {
     data->parent = parent;
     data->items = items;
 
-    list_display("Options", "A: Toggle, B: Return", data, titledb_options_update, NULL);
+    list_display("オプション", "A: 変更, B: 戻る", data, titledb_options_update, NULL);
 }
 
 static void titledb_draw_top(ui_view* view, void* data, float x1, float y1, float x2, float y2, list_item* selected) {
     titledb_data* listData = (titledb_data*) data;
 
     if(!listData->populateData.itemsListed) {
-        static const char* text = "Loading title list, please wait...\nNOTE: Cancelling may take up to 15 seconds.";
+        static const char* text = "タイトルリストを読み込んでいます。お待ちください...\n注意: キャンセルには最大15秒かかります。";
 
         float textWidth;
         float textHeight;
@@ -333,7 +333,7 @@ static void titledb_update(ui_view* view, void* data, linked_list* items, list_i
         listData->populateData.items = items;
         Result res = task_populate_titledb(&listData->populateData);
         if(R_FAILED(res)) {
-            error_display_res(NULL, NULL, res, "Failed to initiate TitleDB list population.");
+            error_display_res(NULL, NULL, res, "TitleDBのリストの作成の開始に失敗しました。");
         }
 
         listData->populated = true;
@@ -352,7 +352,7 @@ static void titledb_update(ui_view* view, void* data, linked_list* items, list_i
     }
 
     if(listData->populateData.finished && R_FAILED(listData->populateData.result)) {
-        error_display_res(NULL, NULL, listData->populateData.result, "Failed to populate TitleDB list.");
+        error_display_res(NULL, NULL, listData->populateData.result, "TitleDBのリストの作成に失敗しました。");
 
         listData->populateData.result = 0;
     }
@@ -374,7 +374,7 @@ static bool titledb_filter(void* data, titledb_info* info) {
 void titledb_open() {
     titledb_data* data = (titledb_data*) calloc(1, sizeof(titledb_data));
     if(data == NULL) {
-        error_display(NULL, NULL, "Failed to allocate TitleDB data.");
+        error_display(NULL, NULL, "TitleDBのデータの割り当てに失敗しました。");
 
         return;
     }
@@ -390,5 +390,5 @@ void titledb_open() {
     data->populateData.filter = titledb_filter;
     data->populateData.compare = titledb_compare;
 
-    list_display("TitleDB.com", "A: Select, B: Return, X: Refresh, Y: Update All, Select: Options", data, titledb_update, titledb_draw_top);
+    list_display("TitleDB.com", "A: 選択, B: 戻る, X: 一覧をリロード, Y: 全てをアップデート, Select: オプション", data, titledb_update, titledb_draw_top);
 }

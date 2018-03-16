@@ -120,19 +120,19 @@ void init() {
 
     Result romfsRes = romfsInit();
     if(R_FAILED(romfsRes)) {
-        error_panic("Failed to mount RomFS: %08lX", romfsRes);
+        error_panic("RomFSのマウントに失敗しました: %08lX", romfsRes);
         return;
     }
 
     if(R_FAILED(init_services())) {
         if(!attempt_patch_pid()) {
-            error_panic("Kernel backdoor not installed.\nPlease run a kernel exploit and try again.");
+            error_panic("カーネルバックドアがインストールされていません。\nカーネルエクスプロイトを実行して、やり直してください。");
             return;
         }
 
         Result initRes = init_services();
         if(R_FAILED(initRes)) {
-            error_panic("Failed to initialize services: %08lX", initRes);
+            error_panic("サービスの初期化に失敗しました: %08lX", initRes);
             return;
         }
     }
@@ -142,7 +142,7 @@ void init() {
     APT_GetAppCpuTimeLimit(&old_time_limit);
     Result cpuRes = APT_SetAppCpuTimeLimit(30);
     if(R_FAILED(cpuRes)) {
-        error_panic("Failed to set syscore CPU time limit: %08lX", cpuRes);
+        error_panic("syscore CPUの時間制限を設定できませんでした: %08lX", cpuRes);
         return;
     }
 

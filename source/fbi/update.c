@@ -106,12 +106,12 @@ static void update_check_update(ui_view* view, void* data, float* progress, char
     info_destroy(view);
 
     if(hasUpdate) {
-        action_install_url("Update FBI to the latest version?", updateURL, fs_get_3dsx_path(), updateData, update_finished_url, update_finished_all, NULL);
+        action_install_url("FBIを最新バージョンに更新しますか？", updateURL, fs_get_3dsx_path(), updateData, update_finished_url, update_finished_all, NULL);
     } else {
         if(R_FAILED(res)) {
-            error_display_res(NULL, NULL, res, "Failed to check for update.");
+            error_display_res(NULL, NULL, res, "更新の確認に失敗しました。");
         } else {
-            prompt_display_notify("Success", "No updates available.", COLOR_TEXT, NULL, NULL, NULL);
+            prompt_display_notify("成功", "利用可能な更新はありません。", COLOR_TEXT, NULL, NULL, NULL);
         }
 
         free(updateData);
@@ -121,10 +121,10 @@ static void update_check_update(ui_view* view, void* data, float* progress, char
 void update_open() {
     update_data* data = (update_data*) calloc(1, sizeof(update_data));
     if(data == NULL) {
-        error_display(NULL, NULL, "Failed to allocate update data.");
+        error_display(NULL, NULL, "更新データの割り当てに失敗しました。");
 
         return;
     }
 
-    info_display("Checking For Updates", "", false, data, update_check_update, NULL);
+    info_display("アップデートの確認", "", false, data, update_check_update, NULL);
 }

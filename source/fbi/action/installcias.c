@@ -120,7 +120,7 @@ static Result action_install_cias_open_dst(void* data, u32 index, void* initialR
 
     bool n3ds = false;
     if(R_SUCCEEDED(APT_CheckNew3DS(&n3ds)) && !n3ds && ((info->ciaInfo.titleId >> 28) & 0xF) == 2) {
-        ui_view* view = prompt_display_yes_no("Confirmation", "Title is intended for New 3DS systems.\nContinue?", COLOR_TEXT, data, action_install_cias_draw_top, action_install_cias_n3ds_onresponse);
+        ui_view* view = prompt_display_yes_no("確認", "タイトルはNew3DSのシステムを対象としています。\n続けますか？", COLOR_TEXT, data, action_install_cias_draw_top, action_install_cias_n3ds_onresponse);
         if(view != NULL) {
             svcWaitSynchronization(view->active, U64_MAX);
         }
@@ -188,7 +188,7 @@ static Result action_install_cias_restore(void* data, u32 index) {
 }
 
 bool action_install_cias_error(void* data, u32 index, Result res, ui_view** errorView) {
-    *errorView = error_display_res(data, action_install_cias_draw_top, res, "Failed to install CIA file.");
+    *errorView = error_display_res(data, action_install_cias_draw_top, res, "CIAファイルのインストールに失敗しました。");
     return true;
 }
 
@@ -217,7 +217,7 @@ static void action_install_cias_update(ui_view* view, void* data, float* progres
         info_destroy(view);
 
         if(R_SUCCEEDED(installData->installInfo.result)) {
-            prompt_display_notify("Success", "Install finished.", COLOR_TEXT, NULL, NULL, NULL);
+            prompt_display_notify("成功", "インストールが完了しました。", COLOR_TEXT, NULL, NULL, NULL);
         }
 
         action_install_cias_free_data(installData);
@@ -246,7 +246,7 @@ static void action_install_cias_onresponse(ui_view* view, void* data, u32 respon
     if(response == PROMPT_YES) {
         Result res = task_data_op(&installData->installInfo);
         if(R_SUCCEEDED(res)) {
-            info_display("Installing CIA(s)", "Press B to cancel.", true, data, action_install_cias_update, action_install_cias_draw_top);
+            info_display("CIAのインストール", "Bを押してキャンセル", true, data, action_install_cias_update, action_install_cias_draw_top);
         } else {
             error_display_res(NULL, NULL, res, "Failed to initiate CIA installation.");
 
@@ -280,9 +280,9 @@ static void action_install_cias_loading_update(ui_view* view, void* data, float*
             loadingData->installData->installInfo.total = linked_list_size(&loadingData->installData->contents);
             loadingData->installData->installInfo.processed = loadingData->installData->installInfo.total;
 
-            prompt_display_yes_no("Confirmation", loadingData->message, COLOR_TEXT, loadingData->installData, action_install_cias_draw_top, action_install_cias_onresponse);
+            prompt_display_yes_no("確認", loadingData->message, COLOR_TEXT, loadingData->installData, action_install_cias_draw_top, action_install_cias_onresponse);
         } else {
-            error_display_res(NULL, NULL, loadingData->popData.result, "Failed to populate CIA list.");
+            error_display_res(NULL, NULL, loadingData->popData.result, "CIAのリストに登録できませんでした。");
 
             action_install_cias_free_data(loadingData->installData);
         }
@@ -295,13 +295,13 @@ static void action_install_cias_loading_update(ui_view* view, void* data, float*
         svcSignalEvent(loadingData->popData.cancelEvent);
     }
 
-    snprintf(text, PROGRESS_TEXT_MAX, "Fetching CIA list...");
+    snprintf(text, PROGRESS_TEXT_MAX, "CIAのリストを取得中...");
 }
 
 static void action_install_cias_internal(linked_list* items, list_item* selected, const char* message, bool delete) {
     install_cias_data* data = (install_cias_data*) calloc(1, sizeof(install_cias_data));
     if(data == NULL) {
-        error_display(NULL, NULL, "Failed to allocate install CIAs data.");
+        error_display(NULL, NULL, "インストールしたCIAのデータの割り当てに失敗しました。");
 
         return;
     }
@@ -311,7 +311,7 @@ static void action_install_cias_internal(linked_list* items, list_item* selected
     file_info* targetInfo = (file_info*) selected->data;
     Result targetCreateRes = task_create_file_item(&data->targetItem, targetInfo->archive, targetInfo->path, targetInfo->attributes, true);
     if(R_FAILED(targetCreateRes)) {
-        error_display_res(NULL, NULL, targetCreateRes, "Failed to create target file item.");
+        error_display_res(NULL, NULL, targetCreateRes, "ターゲットファイルアイテムの作成に失敗しました。");
 
         action_install_cias_free_data(data);
         return;
@@ -356,7 +356,7 @@ static void action_install_cias_internal(linked_list* items, list_item* selected
 
     install_cias_loading_data* loadingData = (install_cias_loading_data*) calloc(1, sizeof(install_cias_loading_data));
     if(loadingData == NULL) {
-        error_display(NULL, NULL, "Failed to allocate loading data.");
+        error_display(NULL, NULL, "読み込みデータの割り当てに失敗しました。");
 
         action_install_cias_free_data(data);
         return;
@@ -376,28 +376,28 @@ static void action_install_cias_internal(linked_list* items, list_item* selected
 
     Result listRes = task_populate_files(&loadingData->popData);
     if(R_FAILED(listRes)) {
-        error_display_res(NULL, NULL, listRes, "Failed to initiate CIA list population.");
+        error_display_res(NULL, NULL, listRes, "CIAのリストの作成に失敗しました。");
 
         free(loadingData);
         action_install_cias_free_data(data);
         return;
     }
 
-    info_display("Loading", "Press B to cancel.", false, loadingData, action_install_cias_loading_update, action_install_cias_loading_draw_top);
+    info_display("読み込み中", "Bを押してキャンセル", false, loadingData, action_install_cias_loading_update, action_install_cias_loading_draw_top);
 }
 
 void action_install_cia(linked_list* items, list_item* selected) {
-    action_install_cias_internal(items, selected, "Install the selected CIA?", false);
+    action_install_cias_internal(items, selected, "選択したCIAをインストールしますか？", false);
 }
 
 void action_install_cia_delete(linked_list* items, list_item* selected) {
-    action_install_cias_internal(items, selected, "Install and delete the selected CIA?", true);
+    action_install_cias_internal(items, selected, "選択したCIAをインストールして削除しますか？", true);
 }
 
 void action_install_cias(linked_list* items, list_item* selected) {
-    action_install_cias_internal(items, selected, "Install all CIAs in the current directory?", false);
+    action_install_cias_internal(items, selected, "現在のディレクトリ内のすべてのCIAをインストールしますか？", false);
 }
 
 void action_install_cias_delete(linked_list* items, list_item* selected) {
-    action_install_cias_internal(items, selected, "Install and delete all CIAs in the current directory?", true);
+    action_install_cias_internal(items, selected, "現在のディレクトリにすべてのCIAをインストールして削除しますか？", true);
 }

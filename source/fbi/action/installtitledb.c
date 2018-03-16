@@ -50,7 +50,7 @@ static void action_install_titledb_finished_all(void* data) {
 void action_install_titledb(linked_list* items, list_item* selected, bool cia) {
     install_titledb_data* data = (install_titledb_data*) calloc(1, sizeof(install_titledb_data));
     if(data == NULL) {
-        error_display(NULL, NULL, "Failed to allocate install TitleDB data.");
+        error_display(NULL, NULL, "インストールしたTitleDBのデータの割り当てに失敗しました。");
 
         return;
     }
@@ -82,5 +82,5 @@ void action_install_titledb(linked_list* items, list_item* selected, bool cia) {
         }
     }
 
-    action_install_url("Install the selected title from TitleDB?", urls, paths, data, action_install_titledb_finished_url, action_install_titledb_finished_all, action_install_titledb_draw_top);
+    action_install_url("TitleDBから選択したタイトルをインストールしますか？", urls, paths, data, action_install_titledb_finished_url, action_install_titledb_finished_all, action_install_titledb_draw_top);
 }

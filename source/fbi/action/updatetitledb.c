@@ -55,7 +55,7 @@ static void action_update_titledb_finished_all(void* data) {
 void action_update_titledb(linked_list* items, list_item* selected) {
     update_titledb_data* data = (update_titledb_data*) calloc(1, sizeof(update_titledb_data));
     if(data == NULL) {
-        error_display(NULL, NULL, "Failed to allocate install TitleDB data.");
+        error_display(NULL, NULL, "インストールしたTitleDBデータの割り当てに失敗しました。");
 
         return;
     }
@@ -108,8 +108,8 @@ void action_update_titledb(linked_list* items, list_item* selected) {
     }
 
     if(index > 0) {
-        action_install_url("Install all updates from TitleDB?", data->urls, data->paths, data, action_update_titledb_finished_url, action_update_titledb_finished_all, action_update_titledb_draw_top);
+        action_install_url("TitleDBからすべてのアップデートをインストールしますか？", data->urls, data->paths, data, action_update_titledb_finished_url, action_update_titledb_finished_all, action_update_titledb_draw_top);
     } else {
-        prompt_display_notify("Success", "All titles are up to date.", COLOR_TEXT, NULL, NULL, NULL);
+        prompt_display_notify("成功", "すべてのタイトルが最新です。", COLOR_TEXT, NULL, NULL, NULL);
     }
 }
